@@ -10,11 +10,16 @@ Subvenciones directas y rápidas para microrredes solares y sistemas de agua en 
 
 [Más información en prxpr.org](https://prxpr.org)
 
+<!-- Oculto por ahora. Para mostrar KIND otra vez, borre esta línea y la línea "fin de oculto" abajo.
+
 ## Kids in Need of Defense (KIND)
 
 Representación legal gratuita para niños inmigrantes no acompañados en los Estados Unidos. Sandra comenzó su carrera en Boston ayudando a familias inmigrantes a encontrar vivienda y empleo.
 
 [Más información en supportkind.org](https://supportkind.org/get-involved/give-to-kind/)
+
+fin de oculto -->
+
 
 ## TheDream.US
 

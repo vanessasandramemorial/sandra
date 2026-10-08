@@ -10,11 +10,16 @@ Direct, fast-acting grants for solar microgrids and water systems in Puerto Rico
 
 [Learn more at prxpr.org](https://prxpr.org)
 
+<!-- Hidden for now. To show KIND again, delete this line and the "end hidden" line below.
+
 ## Kids in Need of Defense (KIND)
 
 Free legal representation for unaccompanied immigrant children in the United States. Sandra began her career in Boston helping immigrant families find homes and work.
 
 [Learn more at supportkind.org](https://supportkind.org/get-involved/give-to-kind/)
+
+end hidden -->
+
 
 ## TheDream.US
 
