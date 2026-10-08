@@ -44,6 +44,12 @@ export default async function Guestbook({
         </p>
       )}
 
+      {page === 0 && (
+        <p className="muted-note">
+          {g.legacyNote} <a href={localize("/legacy", lang)}>{g.legacyLink}</a>
+        </p>
+      )}
+
       {failed ? (
         <p className="form-error">{g.loadFailed}</p>
       ) : entries.length === 0 ? (

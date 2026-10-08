@@ -22,6 +22,6 @@ She is survived by her daughters, Vanessa and Viviana; her four grandchildren; a
 
 Her warmth, her curiosity, and her faith in others live on in everyone she touched.
 
-A private service will be held for her family.
+A private service will be held for her family. In lieu of flowers, the family invites you to help carry on her legacy by supporting one of the [causes close to Sandra’s heart](/legacy).
 
 If you have photographs of Sandra, or of moments you shared with her, we would love for you to add them to the [Photographs](/photos) or [Art](/artifacts) sections of this site. We would also love for you to leave a happy story about Sandra, or a message to her, in the [Guestbook](/guestbook).

@@ -45,5 +45,6 @@ export const SECTIONS = [
   { href: "/photos", key: "photos" },
   { href: "/artifacts", key: "art" },
   { href: "/guestbook", key: "guestbook" },
+  { href: "/legacy", key: "legacy" },
   { href: "/subscribe", key: "subscribe" },
 ] as const satisfies readonly { href: string; key: keyof Dictionary["nav"] }[];

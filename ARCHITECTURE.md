@@ -84,8 +84,8 @@ Cloudflare Images is never the only copy of anything that's been approved.
 
 Public, in nav order (`src/lib/sections.ts`): `/photos` (with
 `/photos/add`), `/artifacts` (shown as "Art"), `/guestbook` (with
-`/guestbook/add`), `/subscribe` — plus the home page `/` and
-`/how-to-make-this`.
+`/guestbook/add`), `/legacy` (shown as "Her Legacy": causes she cared about, from `content/legacy.md`),
+`/subscribe` — plus the home page `/` and `/how-to-make-this`.
 
 ### Two languages
 

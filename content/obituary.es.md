@@ -22,6 +22,6 @@ Le sobreviven sus hijas, Vanessa y Viviana; sus cuatro nietos; y sus hermanas, A
 
 Su calidez, su curiosidad y su fe en los demás siguen vivas en todas las personas que tocó.
 
-Se llevará a cabo un servicio privado para su familia.
+Se llevará a cabo un servicio privado para su familia. En lugar de flores, la familia le invita a ayudar a continuar su legado apoyando una de las [causas que Sandra llevaba en el corazón](/es/legacy).
 
 Si tiene fotos de Sandra, o de momentos que compartió con ella, nos encantaría que las añadiera a las secciones de [Fotos](/es/photos) o [Arte](/es/artifacts) de este sitio. También nos encantaría que dejara una historia alegre sobre Sandra, o un mensaje para ella, en el [Libro de visitas](/es/guestbook).
