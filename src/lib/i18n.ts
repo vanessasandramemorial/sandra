@@ -108,7 +108,7 @@ const en = {
     emptySoon: "If you have photographs of Sandra, there will be a way to add them shortly.",
   },
   art: {
-    intro: "The paintings Sandra made, and the glass mosaic she pieced together.",
+    intro: "Some of Sandra’s creations",
     send: "Send Something She Made",
     notOnlyPhotos: "Not only photographs — recordings, scans, letters, and documents are welcome too.",
     loadFailed: "This page can’t be loaded just now. Please try again shortly.",
@@ -329,7 +329,7 @@ const es: Dictionary = {
     emptySoon: "Si tiene fotos de Sandra, pronto habrá una manera de añadirlas.",
   },
   art: {
-    intro: "Las pinturas que hizo Sandra, y el mosaico de vidrio que ella armó pieza por pieza.",
+    intro: "Algunas de las creaciones de Sandra",
     send: "Enviar algo que ella hizo",
     notOnlyPhotos: "No solo fotos — también son bienvenidas grabaciones, documentos escaneados, cartas y otros documentos.",
     loadFailed: "Esta página no se puede cargar en este momento. Por favor, intente de nuevo en un rato.",
