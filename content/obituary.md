@@ -2,7 +2,7 @@
 title: "Obituary"
 ---
 
-Sandra Ivelisse Aponte Santiago died on September 22, 2026, in Guaynabo, Puerto Rico, after a battle with cancer. She was 73. She leaves behind a family who loved her, friends all over the world, and many former students whose futures are brighter because she believed in them.
+Sandra Ivelisse Aponte Santiago passed away on September 22, 2026, in Guaynabo, Puerto Rico, after a battle with cancer. She was 73. She leaves behind a family who loved her, friends all over the world, and many former students whose futures are brighter because she believed in them.
 
 The third of four sisters, Sandra was born in San Juan on October 7, 1952, and grew up in Puerto Rico. After graduating cum laude in sociology from the University of Puerto Rico, she set out for Boston.
 
@@ -23,3 +23,5 @@ She is survived by her daughters, Vanessa and Viviana; her four grandchildren; a
 Her warmth, her curiosity, and her faith in others live on in everyone she touched.
 
 A private service will be held for her family.
+
+If you have photographs of Sandra, or of moments you shared with her, we would love for you to add them to the [Photographs](/photos) or [Art](/artifacts) sections of this site. We would also love for you to leave a happy story about Sandra, or a message to her, in the [Guestbook](/guestbook).
