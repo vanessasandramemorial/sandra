@@ -8,7 +8,7 @@ A memorial site for Sandra Ivelisse Aponte Santiago (1952–2026), maintained by
 daughter Vanessa. It is a fork of the Joe Weisman memorial
 (github.com/jazzlw/joeweisman, the `upstream` remote). Next.js 16 (App Router,
 TypeScript) on Vercel, deploying from `main` of the public repo
-`vanessaperegrine/sandra`. The obituary renders from Markdown in `content/`; a photo
+`vanessasandramemorial/sandra`. The obituary renders from Markdown in `content/`; a photo
 gallery and an "Art" gallery with public submissions, a guestbook, and email
 collection are live (see `README.md` "The services" for what's deployed where).
 There is no service page: the service is private.
@@ -28,7 +28,7 @@ The site is bilingual. English is at the bare paths and Puerto Rican Spanish, us
   can't be taken back: Sandra's grandchildren, her daughters' husbands, and her
   former partners. No date or place for the service.
 - **Confirming a deploy:** after a push, read the Vercel status with
-  `gh api repos/vanessaperegrine/sandra/commits/<sha>/status`, then check the live
+  `gh api repos/vanessasandramemorial/sandra/commits/<sha>/status`, then check the live
   page once in a browser. Don't poll the site with curl in a loop — Vercel's bot
   protection answers bursts with a "Security Checkpoint" page, which looks like a
   failed deploy.
