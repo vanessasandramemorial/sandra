@@ -35,19 +35,18 @@ export default async function Guestbook({
       <hr className="rule" />
 
       {page === 0 && (
-        <p className="jump-note">
-          {/* Plain anchor, not Link: the target renders a Turnstile widget and a
-              client-side navigation leaves it unrendered. See needsFullLoad. */}
-          <a href={localize("/guestbook/add", lang)} className="btn-primary">
-            {g.leave}
-          </a>
-        </p>
-      )}
-
-      {page === 0 && (
-        <p className="muted-note">
-          {g.legacyNote} <a href={localize("/legacy", lang)}>{g.legacyLink}</a>
-        </p>
+        <>
+          <p className="prose">
+            {g.invite} <a href={localize("/legacy", lang)}>{g.legacyLink}</a>
+          </p>
+          <p className="jump-note">
+            {/* Plain anchor, not Link: the target renders a Turnstile widget and a
+                client-side navigation leaves it unrendered. See needsFullLoad. */}
+            <a href={localize("/guestbook/add", lang)} className="btn-primary">
+              {g.leave}
+            </a>
+          </p>
+        </>
       )}
 
       {failed ? (

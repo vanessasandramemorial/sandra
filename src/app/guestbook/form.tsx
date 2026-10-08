@@ -44,7 +44,7 @@ export default function GuestbookForm({ siteKey, lang }: { siteKey?: string; lan
         <h2>{g.leave}</h2>
         <p className="muted-note">{g.formIntro}</p>
         <p className="muted-note">
-          {g.legacyNote} <a href={localize("/legacy", lang)}>{g.legacyLink}</a>
+          {g.invite} <a href={localize("/legacy", lang)}>{g.legacyLink}</a>
         </p>
 
         <form action={formAction} className="form">
