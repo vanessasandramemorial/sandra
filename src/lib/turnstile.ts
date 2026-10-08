@@ -21,6 +21,12 @@ export function turnstileConfigured(): boolean {
 export type OutagePolicy = "deny" | "allow";
 
 /**
+ * Why a check failed, so a form can say so in the visitor's language — the
+ * `error` text alongside it is English. Keys match `turnstile` in src/lib/i18n.ts.
+ */
+export type TurnstileFailure = "unavailable" | "missing" | "rejected" | "unreachable";
+
+/**
  * Verify a Turnstile token server-side. Never trust the browser's word for it.
  *
  * Fails **closed** on a missing secret in production: submissions are refused
@@ -34,19 +40,23 @@ export async function verifyTurnstile(
   token: string | null | undefined,
   ip?: string | null,
   onOutage: OutagePolicy = "deny",
-): Promise<{ ok: boolean; error?: string; unverified?: boolean }> {
+): Promise<{ ok: boolean; error?: string; code?: TurnstileFailure; unverified?: boolean }> {
   const secret = process.env.TURNSTILE_SECRET;
 
   if (!secret) {
     if (process.env.NODE_ENV === "production") {
       console.error("TURNSTILE_SECRET is not set — refusing form submissions.");
-      return { ok: false, error: "This form is temporarily unavailable. Please try again later." };
+      return {
+        ok: false,
+        code: "unavailable",
+        error: "This form is temporarily unavailable. Please try again later.",
+      };
     }
     return { ok: true };
   }
 
   if (!token) {
-    return { ok: false, error: "Please complete the verification below and try again." };
+    return { ok: false, code: "missing", error: "Please complete the verification below and try again." };
   }
 
   try {
@@ -65,7 +75,11 @@ export async function verifyTurnstile(
     // Gate on an explicit true. A malformed or unexpected body must not pass.
     if (result.success !== true) {
       console.warn("Turnstile rejected a submission:", result["error-codes"]);
-      return { ok: false, error: "Verification failed. Please reload the page and try again." };
+      return {
+        ok: false,
+        code: "rejected",
+        error: "Verification failed. Please reload the page and try again.",
+      };
     }
     return { ok: true };
   } catch (e) {
@@ -76,6 +90,10 @@ export async function verifyTurnstile(
       console.warn("Accepting an UNVERIFIED submission: Turnstile was unreachable.");
       return { ok: true, unverified: true };
     }
-    return { ok: false, error: "Could not verify your submission just now. Please try again." };
+    return {
+      ok: false,
+      code: "unreachable",
+      error: "Could not verify your submission just now. Please try again.",
+    };
   }
 }

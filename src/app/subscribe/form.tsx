@@ -3,6 +3,7 @@
 import Script from "next/script";
 import { useActionState, useEffect, useRef } from "react";
 import { subscribe, type SubscribeState } from "./actions";
+import { dict, type Locale } from "@/lib/i18n";
 
 const initial: SubscribeState = { status: "idle" };
 
@@ -17,11 +18,15 @@ const initial: SubscribeState = { status: "idle" };
 export default function SubscribeForm({
   siteKey,
   rsvp = false,
+  lang,
 }: {
   siteKey?: string;
   rsvp?: boolean;
+  lang: Locale;
 }) {
   const [state, formAction, pending] = useActionState(subscribe, initial);
+  const t = dict(lang);
+  const s = t.subscribe;
   const widget = useRef<HTMLDivElement>(null);
 
   // A Turnstile token is single-use. After a failed submit the old one is spent,
@@ -41,7 +46,7 @@ export default function SubscribeForm({
     return (
       <>
         <hr className="rule" />
-        <h2>{rsvp ? "We'll see you there" : "You are on the list!"}</h2>
+        <h2>{rsvp ? s.seeYou : s.onList}</h2>
         <p className="form-ok" role="status">
           {state.message}
         </p>
@@ -59,9 +64,11 @@ export default function SubscribeForm({
         {/* Read server-side to set rsvp_at. A hidden field rather than a second
             action, so both paths share one validated, Turnstile-checked route. */}
         {rsvp && <input type="hidden" name="rsvp" value="1" />}
+        {/* Which language to answer in. Read by the action; never stored. */}
+        <input type="hidden" name="lang" value={lang} />
 
         <div className="field">
-          <label htmlFor="email">Your email address</label>
+          <label htmlFor="email">{s.yourEmailAddress}</label>
           <input
             id="email"
             name="email"
@@ -75,7 +82,7 @@ export default function SubscribeForm({
 
         <div className="field">
           <label htmlFor="name">
-            Your name <span className="optional">(optional)</span>
+            {t.common.yourName} <span className="optional">{t.common.optional}</span>
           </label>
           <input id="name" name="name" type="text" autoComplete="name" maxLength={120} />
         </div>
@@ -83,7 +90,7 @@ export default function SubscribeForm({
         {rsvp && (
           <div className="field">
             <label htmlFor="party-size">
-              Number attending <span className="optional">(optional)</span>
+              {s.numberAttending} <span className="optional">{t.common.optional}</span>
             </label>
             <input
               id="party-size"
@@ -99,15 +106,15 @@ export default function SubscribeForm({
 
         <div className="field">
           <label htmlFor="note">
-            {rsvp ? "Anything we should know?" : "How did you know Joe?"}{" "}
-            <span className="optional">(optional)</span>
+            {rsvp ? s.anythingToKnow : s.howKnew}{" "}
+            <span className="optional">{t.common.optional}</span>
           </label>
           <textarea
             id="note"
             name="note"
             rows={3}
             maxLength={500}
-            placeholder={rsvp ? "Whether you need a chair near the front — anything useful" : undefined}
+            placeholder={rsvp ? s.rsvpPlaceholder : undefined}
           />
         </div>
 
@@ -137,7 +144,7 @@ export default function SubscribeForm({
         )}
 
         <button type="submit" disabled={pending}>
-          {pending ? "Sending…" : rsvp ? "Yes, I'll be there" : "Send it"}
+          {pending ? t.common.sending : rsvp ? s.rsvpButton : s.send}
         </button>
       </form>
     </>

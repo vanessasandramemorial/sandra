@@ -43,9 +43,11 @@ export const metadata: Metadata = {
     siteName: SITE_NAME,
     title: SITE_NAME,
     description: SITE_DESCRIPTION,
-    // A dedicated 1200x630 crop. The square portrait was being centre-cropped by
-    // Facebook and Twitter, which cut off his hands and the top of his head.
+    // A dedicated 1200x630 crop. Facebook and Twitter centre-crop anything else,
+    // which cuts into the portrait.
     images: [{ url: "/og.jpg", width: 1200, height: 630, alt: SITE_NAME }],
+    locale: "en_US",
+    alternateLocale: ["es_PR"],
   },
   twitter: { card: "summary_large_image", title: SITE_NAME, description: SITE_DESCRIPTION },
   robots: { index: true, follow: true },
@@ -62,7 +64,7 @@ export default function RootLayout({
           for <body>'s own attributes only; mismatches in the actual page
           content are still reported, which is what we want to hear about. */}
       <body suppressHydrationWarning>
-        <a href="#main" className="skip">Skip to content</a>
+        {/* The skip link lives inside Nav, which knows the page's language. */}
         <Nav />
         {children}
         <Footer />

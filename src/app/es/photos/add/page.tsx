@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import AddPhotos from "./view";
+import AddPhotos from "../../../photos/add/view";
 import { alternatesFor, dict } from "@/lib/i18n";
 
 export const metadata: Metadata = {
-  title: dict("en").titles.addPhotos,
-  alternates: alternatesFor("/photos/add", "en"),
+  title: dict("es").titles.addPhotos,
+  alternates: alternatesFor("/photos/add", "es"),
 };
 
 export default function AddPhotosPage({
@@ -12,5 +12,5 @@ export default function AddPhotosPage({
 }: {
   searchParams: Promise<{ kind?: string }>;
 }) {
-  return <AddPhotos searchParams={searchParams} lang="en" />;
+  return <AddPhotos searchParams={searchParams} lang="es" />;
 }

@@ -43,9 +43,12 @@ export async function recentCountForIp(ipHash: string | null): Promise<number> {
   return row?.n ?? 0;
 }
 
-/** Long-form dates: this is read by people, not scanned for data. */
-export function formatDate(d: Date): string {
-  return d.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+/**
+ * Long-form dates: this is read by people, not scanned for data. `locale` is a
+ * BCP 47 tag — DATE_LOCALE in src/lib/i18n.ts.
+ */
+export function formatDate(d: Date, locale = "en-US"): string {
+  return d.toLocaleDateString(locale, { month: "long", day: "numeric", year: "numeric" });
 }
 
 /**

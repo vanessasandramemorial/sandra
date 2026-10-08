@@ -1,20 +1,12 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import GuestbookForm from "../form";
+import AddMessage from "./view";
+import { alternatesFor, dict } from "@/lib/i18n";
 
-export const metadata: Metadata = { title: "Add a message" };
+export const metadata: Metadata = {
+  title: dict("en").titles.addMessage,
+  alternates: alternatesFor("/guestbook/add", "en"),
+};
 
 export default function AddGuestbookPage() {
-  return (
-    <main className="page" id="main">
-      <h1 className="page-title">Add a message</h1>
-      <hr className="rule" />
-
-      <p className="jump-note">
-        <Link href="/guestbook">&larr; Back to the guestbook</Link>
-      </p>
-
-      <GuestbookForm siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY} />
-    </main>
-  );
+  return <AddMessage lang="en" />;
 }

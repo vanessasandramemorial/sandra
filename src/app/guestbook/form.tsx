@@ -4,11 +4,14 @@ import Link from "next/link";
 import Script from "next/script";
 import { useActionState, useEffect } from "react";
 import { signGuestbook, type GuestbookState } from "./actions";
+import { dict, localize, type Locale } from "@/lib/i18n";
 
 const initial: GuestbookState = { status: "idle" };
 
-export default function GuestbookForm({ siteKey }: { siteKey?: string }) {
+export default function GuestbookForm({ siteKey, lang }: { siteKey?: string; lang: Locale }) {
   const [state, formAction, pending] = useActionState(signGuestbook, initial);
+  const t = dict(lang);
+  const g = t.guestbook;
 
   // Tokens are single-use; a spent one would fail the retry for the wrong reason.
   useEffect(() => {
@@ -23,11 +26,9 @@ export default function GuestbookForm({ siteKey }: { siteKey?: string }) {
         <p className="form-ok" role="status">
           {state.message}
         </p>
-        <p className="muted-note">
-          Your message is on the page now. Reload to see it among the others.
-        </p>
-        <Link href="/guestbook" className="btn-quiet">
-          View the guestbook
+        <p className="muted-note">{g.okNote}</p>
+        <Link href={localize("/guestbook", lang)} className="btn-quiet">
+          {g.view}
         </Link>
       </div>
     );
@@ -40,26 +41,26 @@ export default function GuestbookForm({ siteKey }: { siteKey?: string }) {
       )}
 
       <section id="add" className="add-entry">
-        <h2>Leave a message</h2>
-        <p className="muted-note">
-          Once you submit, your message will appear on this page straight away,
-          for his family and everyone else who knew him to read.
-        </p>
+        <h2>{g.leave}</h2>
+        <p className="muted-note">{g.formIntro}</p>
 
         <form action={formAction} className="form">
+          {/* Which language to answer in. Read by the action; never stored. */}
+          <input type="hidden" name="lang" value={lang} />
+
           <div className="field">
-            <label htmlFor="gb-name">Your name</label>
+            <label htmlFor="gb-name">{t.common.yourName}</label>
             <input id="gb-name" name="name" type="text" required autoComplete="name" maxLength={120} />
           </div>
 
           <div className="field">
-            <label htmlFor="gb-message">Your message</label>
+            <label htmlFor="gb-message">{g.yourMessage}</label>
             <textarea id="gb-message" name="message" rows={7} required maxLength={5000} />
           </div>
 
           <div className="field">
             <label htmlFor="gb-email">
-              Your email <span className="optional">(optional, never shown)</span>
+              {t.common.yourEmail} <span className="optional">{t.common.optionalNeverShown}</span>
             </label>
             <input id="gb-email" name="email" type="email" autoComplete="email" maxLength={320} />
           </div>
@@ -87,7 +88,7 @@ export default function GuestbookForm({ siteKey }: { siteKey?: string }) {
           )}
 
           <button type="submit" disabled={pending}>
-            {pending ? "Adding…" : "Add your message"}
+            {pending ? g.adding : g.add}
           </button>
         </form>
       </section>

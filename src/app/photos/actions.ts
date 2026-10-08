@@ -17,6 +17,7 @@ import { parseYear } from "@/lib/exif";
 import { parseKind } from "@/lib/photos";
 import { createDirectUpload, imagesConfigured } from "@/lib/cf-images";
 import { newUploadHandle, verifyUploadHandle } from "@/lib/upload-handle";
+import { dict, parseLocale } from "@/lib/i18n";
 
 export type Ticket = { id: string; uploadURL: string; handle: string; expiresAt: number };
 
@@ -57,36 +58,31 @@ export async function requestUploads(
   count: number,
   files: { name: string; size: number }[],
   turnstileToken: string | null,
+  lang?: string,
 ): Promise<RequestResult> {
+  const t = dict(parseLocale(lang));
   const wanted = Array.isArray(files) ? files : [];
 
   if (count > 0 && !imagesConfigured()) {
     console.error("Cloudflare Images is not configured — refusing uploads.");
-    return { ok: false, error: "Photo uploads aren't available just now. Please try again later." };
+    return { ok: false, error: t.photoActions.unavailable };
   }
   if (wanted.length > 0 && !r2Configured()) {
     console.error("R2 is not configured — refusing artifact file uploads.");
-    return {
-      ok: false,
-      error:
-        "Sending files other than photographs isn't available just now. Please email it to contact@joeweisman.org.",
-    };
+    return { ok: false, error: t.photoActions.filesUnavailable };
   }
   if (!Number.isInteger(count) || count < 0 || count > MAX_PER_SUBMISSION) {
-    return { ok: false, error: `Please choose between 1 and ${MAX_PER_SUBMISSION} photos at a time.` };
+    return { ok: false, error: t.photoActions.photoCount(MAX_PER_SUBMISSION) };
   }
   if (wanted.length > MAX_FILES_PER_SUBMISSION) {
-    return { ok: false, error: `Please send up to ${MAX_FILES_PER_SUBMISSION} other files at a time.` };
+    return { ok: false, error: t.photoActions.fileCount(MAX_FILES_PER_SUBMISSION) };
   }
   if (count === 0 && wanted.length === 0) {
-    return { ok: false, error: "Nothing to send." };
+    return { ok: false, error: t.photoActions.nothing };
   }
   const tooBig = wanted.find((f) => !Number.isFinite(f.size) || f.size > MAX_FILE_BYTES);
   if (tooBig) {
-    return {
-      ok: false,
-      error: `"${tooBig.name}" is too large to send through the form. Please email it to contact@joeweisman.org.`,
-    };
+    return { ok: false, error: t.photoActions.tooLarge(tooBig.name) };
   }
 
   const hdrs = await headers();
@@ -94,7 +90,7 @@ export async function requestUploads(
   const ipHash = hashIp(ip);
 
   const check = await verifyTurnstile(turnstileToken, ip, "deny");
-  if (!check.ok) return { ok: false, error: check.error ?? "Verification failed." };
+  if (!check.ok) return { ok: false, error: t.turnstile[check.code ?? "rejected"] };
 
   try {
     const [row] = (await db()`
@@ -102,10 +98,7 @@ export async function requestUploads(
       where ip_hash = ${ipHash} and created_at > now() - interval '1 hour'
     `) as { n: number }[];
     if ((row?.n ?? 0) + count > HOURLY_LIMIT) {
-      return {
-        ok: false,
-        error: "That's a lot of photos in a short time. Please come back in a little while, or write to contact@joeweisman.org.",
-      };
+      return { ok: false, error: t.photoActions.rateLimited };
     }
 
     const tickets: Ticket[] = [];
@@ -126,7 +119,7 @@ export async function requestUploads(
     return { ok: true, tickets, fileTickets };
   } catch (e) {
     console.error("Failed to create uploads:", e);
-    return { ok: false, error: "Something went wrong starting the upload. Please try again." };
+    return { ok: false, error: t.photoActions.startFailed };
   }
 }
 
@@ -150,12 +143,14 @@ export async function recordArtifactFiles(
   files: FileSubmission[],
   submitter: string,
   email: string,
+  lang?: string,
 ): Promise<{ ok: boolean; saved: number; error?: string }> {
+  const t = dict(parseLocale(lang));
   if (!Array.isArray(files) || files.length === 0) {
-    return { ok: false, saved: 0, error: "No files to save." };
+    return { ok: false, saved: 0, error: t.photoActions.noFiles };
   }
   if (files.length > MAX_FILES_PER_SUBMISSION) {
-    return { ok: false, saved: 0, error: "Too many files in one submission." };
+    return { ok: false, saved: 0, error: t.photoActions.tooManyFiles };
   }
 
   const name = submitter.trim().slice(0, MAX_NAME);
@@ -189,7 +184,7 @@ export async function recordArtifactFiles(
   }
 
   if (saved === 0) {
-    return { ok: false, saved: 0, error: "Those files couldn't be saved. Please try again." };
+    return { ok: false, saved: 0, error: t.photoActions.filesNotSaved };
   }
 
   revalidatePath("/admin");
@@ -254,12 +249,14 @@ export async function recordPhotos(
   submissions: Submission[],
   submitter: string,
   email: string,
+  lang?: string,
 ): Promise<{ ok: boolean; saved: number; error?: string }> {
+  const t = dict(parseLocale(lang));
   if (!Array.isArray(submissions) || submissions.length === 0) {
-    return { ok: false, saved: 0, error: "No photos to save." };
+    return { ok: false, saved: 0, error: t.photoActions.noPhotos };
   }
   if (submissions.length > MAX_PER_SUBMISSION) {
-    return { ok: false, saved: 0, error: "Too many photos in one submission." };
+    return { ok: false, saved: 0, error: t.photoActions.tooManyPhotos };
   }
 
   const name = submitter.trim().slice(0, MAX_NAME);
@@ -301,7 +298,7 @@ export async function recordPhotos(
   }
 
   if (saved === 0) {
-    return { ok: false, saved: 0, error: "Those photos couldn't be saved. Please try again." };
+    return { ok: false, saved: 0, error: t.photoActions.photosNotSaved };
   }
 
   revalidatePath("/admin");

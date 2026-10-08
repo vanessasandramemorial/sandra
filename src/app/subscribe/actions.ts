@@ -5,6 +5,7 @@ import { after } from "next/server";
 import { db } from "@/lib/db";
 import { verifyTurnstile } from "@/lib/turnstile";
 import { notifyRsvp } from "@/lib/notify";
+import { dict, parseLocale } from "@/lib/i18n";
 
 export type SubscribeState = {
   status: "idle" | "ok" | "error";
@@ -25,10 +26,13 @@ export async function subscribe(
   _prev: SubscribeState,
   formData: FormData,
 ): Promise<SubscribeState> {
+  const lang = parseLocale(formData.get("lang"));
+  const t = dict(lang).subscribeActions;
+
   // Honeypot: a field hidden from people but filled in by naive bots.
   if ((formData.get("website") as string | null)?.trim()) {
     // Report success so the bot learns nothing. Nothing is written.
-    return { status: "ok", message: "Thank you — we'll be in touch when there's news." };
+    return { status: "ok", message: t.thanks };
   }
 
   const email = (formData.get("email") as string | null)?.trim() ?? "";
@@ -39,12 +43,12 @@ export async function subscribe(
   // and the wording around it.
   const rsvp = formData.get("rsvp") === "1";
 
-  if (!email) return { status: "error", message: "Please enter an email address." };
+  if (!email) return { status: "error", message: t.needEmail };
   if (email.length > MAX_EMAIL || !EMAIL.test(email)) {
-    return { status: "error", message: "That doesn't look like an email address — please check it." };
+    return { status: "error", message: t.badEmail };
   }
   if (name.length > MAX_NAME || note.length > MAX_NOTE) {
-    return { status: "error", message: "That's longer than we can store. Please shorten it." };
+    return { status: "error", message: t.tooLong };
   }
 
   // Only present on the RSVP form, and optional even there — left blank, the
@@ -54,7 +58,7 @@ export async function subscribe(
   if (partySizeRaw) {
     const n = Number.parseInt(partySizeRaw, 10);
     if (!Number.isInteger(n) || n < 1 || n > MAX_PARTY_SIZE) {
-      return { status: "error", message: `Number attending should be between 1 and ${MAX_PARTY_SIZE}.` };
+      return { status: "error", message: t.partySize(MAX_PARTY_SIZE) };
     }
     partySize = n;
   }
@@ -72,7 +76,7 @@ export async function subscribe(
     ip,
     "allow",
   );
-  if (!check.ok) return { status: "error", message: check.error };
+  if (!check.ok) return { status: "error", message: dict(lang).turnstile[check.code ?? "rejected"] };
 
   try {
     // Signing up twice is a silent success, never an error, and the unique index
@@ -119,21 +123,13 @@ export async function subscribe(
     `;
   } catch (e) {
     console.error("Failed to record a contact:", e);
-    return {
-      status: "error",
-      message:
-        "Something went wrong saving that. Please try again, or write to contact@joeweisman.org.",
-    };
+    return { status: "error", message: t.saveFailed };
   }
 
   if (rsvp) {
     after(() => notifyRsvp({ email, name: name || null, note: note || null, partySize }));
-    return {
-      status: "ok",
-      message:
-        "Thank you — we have you down as coming, and we'll write when there's anything else to say.",
-    };
+    return { status: "ok", message: t.thanksRsvp };
   }
 
-  return { status: "ok", message: "Thank you — we'll be in touch when there's news." };
+  return { status: "ok", message: t.thanks };
 }

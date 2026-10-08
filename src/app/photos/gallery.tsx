@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Rotatable from "../rotatable";
+import { dict, type Locale } from "@/lib/i18n";
 
 /** One image in a stack — the head itself, or one it continues to. */
 export type GalleryImage = {
@@ -119,7 +120,8 @@ function Caption({
   );
 }
 
-export default function Gallery({ photos }: { photos: GalleryPhoto[] }) {
+export default function Gallery({ photos, lang }: { photos: GalleryPhoto[]; lang: Locale }) {
+  const t = dict(lang).gallery;
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   // Which image within the open photo's own stack is showing — 0 is the
   // head. Reset whenever a different photo opens, including via Previous/Next.
@@ -198,15 +200,15 @@ export default function Gallery({ photos }: { photos: GalleryPhoto[] }) {
               }}
               aria-label={
                 p.stack.length > 0
-                  ? `Enlarge: ${p.caption ?? "photograph"} (${p.stack.length + 1} images)`
+                  ? t.enlargeStack(p.caption, p.stack.length + 1)
                   : p.caption
-                    ? `Enlarge: ${p.caption}`
-                    : "Enlarge photograph"
+                    ? t.enlargeCaption(p.caption)
+                    : t.enlarge
               }
             >
               <Rotatable
                 src={p.thumb}
-                alt={p.caption ?? "A photograph of Joe Weisman"}
+                alt={p.caption ?? t.defaultAlt}
                 rotation={p.rotation}
                 width={p.width}
                 height={p.height}
@@ -217,7 +219,7 @@ export default function Gallery({ photos }: { photos: GalleryPhoto[] }) {
                 // aria-hidden: the button's own aria-label already says how
                 // many images are in the stack; this is a visual nudge only.
                 <span className="gallery-stack-hint" aria-hidden="true">
-                  click to see all {p.stack.length + 1} items
+                  {t.stackHint(p.stack.length + 1)}
                 </span>
               )}
             </button>
@@ -249,7 +251,7 @@ export default function Gallery({ photos }: { photos: GalleryPhoto[] }) {
           <div className="lightbox-inner">
             <Rotatable
               src={frame.full}
-              alt={frame.caption ?? "A photograph of Joe Weisman"}
+              alt={frame.caption ?? t.defaultAlt}
               rotation={frame.rotation}
               width={frame.width}
               height={frame.height}
@@ -263,18 +265,16 @@ export default function Gallery({ photos }: { photos: GalleryPhoto[] }) {
                   onClick={() => setStackIndex((n) => Math.max(0, n - 1))}
                   disabled={stackIndex === 0}
                 >
-                  &larr; Previous in this set
+                  {t.prevInSet}
                 </button>
-                <span className="lightbox-count">
-                  Image {stackIndex + 1} of {frames.length}
-                </span>
+                <span className="lightbox-count">{t.imageOf(stackIndex + 1, frames.length)}</span>
                 <button
                   type="button"
                   className="btn-quiet"
                   onClick={() => setStackIndex((n) => Math.min(frames.length - 1, n + 1))}
                   disabled={stackIndex === frames.length - 1}
                 >
-                  Next in this set &rarr;
+                  {t.nextInSet}
                 </button>
               </div>
             )}
@@ -286,18 +286,16 @@ export default function Gallery({ photos }: { photos: GalleryPhoto[] }) {
                 onClick={() => step(-1)}
                 disabled={openIndex === 0}
               >
-                &larr; Previous
+                {t.prev}
               </button>
-              <span className="lightbox-count">
-                {(openIndex ?? 0) + 1} of {photos.length}
-              </span>
+              <span className="lightbox-count">{t.countOf((openIndex ?? 0) + 1, photos.length)}</span>
               <button
                 type="button"
                 className="btn-quiet"
                 onClick={() => step(1)}
                 disabled={openIndex === photos.length - 1}
               >
-                Next &rarr;
+                {t.next}
               </button>
             </div>
 
@@ -310,7 +308,7 @@ export default function Gallery({ photos }: { photos: GalleryPhoto[] }) {
             />
 
             <button type="button" className="lightbox-close btn-quiet" onClick={close}>
-              Close
+              {t.close}
             </button>
           </div>
         )}

@@ -82,9 +82,24 @@ Cloudflare Images is never the only copy of anything that's been approved.
 
 ## Pages and routes
 
-Public, in nav order (`src/lib/sections.ts`): `/service`, `/photos` (with
-`/photos/add`), `/artifacts`, `/guestbook` (with `/guestbook/add`),
-`/recipes`, `/subscribe` — plus the home page `/` and `/how-to-make-this`.
+Public, in nav order (`src/lib/sections.ts`): `/photos` (with
+`/photos/add`), `/artifacts` (shown as "Art"), `/guestbook` (with
+`/guestbook/add`), `/subscribe` — plus the home page `/` and
+`/how-to-make-this`.
+
+### Two languages
+
+Every public page except `/how-to-make-this` exists in English at its bare
+path and in Spanish under `/es` (`/es`, `/es/photos`, …). The pages under
+`src/app/es/` are thin wrappers: each route's markup lives in a `view.tsx`
+beside its English `page.tsx` and takes a `lang` prop. Every visitor-facing
+string is in `src/lib/i18n.ts`, typed so the Spanish can't drift out of shape
+from the English; the obituary is `content/obituary.md` and
+`content/obituary.es.md`. Forms post a hidden `lang` field so server actions
+answer in the visitor's language. `<html lang>` comes from the shared root
+layout, so `src/app/es/layout.tsx` marks its content `lang="es"` and the nav
+corrects the root attribute on load. Admin pages and admin emails stay
+English.
 
 Admin, password-gated, unlinked and `noindex`: `/admin` (the moderation
 dashboard) and `/admin/files/[id]` (downloads one non-photo submission — the

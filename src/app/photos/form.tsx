@@ -10,8 +10,8 @@ import {
   type Submission,
   type FileSubmission,
 } from "./actions";
-import { ARTIFACTS_LABEL } from "@/lib/sections";
 import { parseYear } from "@/lib/year";
+import { dict, localize, type Locale } from "@/lib/i18n";
 
 type Kind = "photo" | "artifact";
 
@@ -144,10 +144,14 @@ async function uploadWithRetry(send: () => Promise<Response>, label: string): Pr
 export default function PhotoForm({
   siteKey,
   defaultKind = "photo",
+  lang,
 }: {
   siteKey?: string;
   defaultKind?: Kind;
+  lang: Locale;
 }) {
+  const t = dict(lang).photoForm;
+  const c = dict(lang).common;
   const [picked, setPicked] = useState<Picked[]>([]);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -232,8 +236,8 @@ export default function PhotoForm({
     if (tooBig) {
       setError(
         isImageFile(tooBig)
-          ? `"${tooBig.name}" is ${(tooBig.size / 1048576).toFixed(0)} MB, and our image service can't take anything over 10 MB. Please email that one to contact@joeweisman.org — we'd still very much like to have it, and we'll resize it at this end.`
-          : `"${tooBig.name}" is larger than 100 MB. Please email that one to contact@joeweisman.org instead.`,
+          ? t.errTooBigImage(tooBig.name, (tooBig.size / 1048576).toFixed(0))
+          : t.errTooBigFile(tooBig.name),
       );
       return;
     }
@@ -259,11 +263,11 @@ export default function PhotoForm({
     const unique = next.filter((p, i) => next.findIndex((x) => x.key === p.key) === i);
 
     if (unique.filter((p) => p.isImage).length > MAX_FILES) {
-      setError(`Please send up to ${MAX_FILES} photos at a time. You can come back and add more.`);
+      setError(t.errTooManyPhotos(MAX_FILES));
       return;
     }
     if (unique.filter((p) => !p.isImage).length > MAX_OTHER_FILES) {
-      setError(`Please send up to ${MAX_OTHER_FILES} files other than photographs at a time.`);
+      setError(t.errTooManyFiles(MAX_OTHER_FILES));
       return;
     }
     setPicked(unique);
@@ -462,7 +466,7 @@ export default function PhotoForm({
     e.preventDefault();
     setError(null);
     if (picked.length === 0) {
-      setError("Please choose at least one file.");
+      setError(t.errChooseOne);
       return;
     }
 
@@ -534,10 +538,10 @@ export default function PhotoForm({
         // to complete, and pressing Send only repeated the same silent wait.
         setError(
           tsStatus === "error"
-            ? "We couldn't load the security check — this usually means an ad blocker or privacy extension is active. Try switching it off for this site and reloading, or email the photos to contact@joeweisman.org instead."
+            ? t.errTsBlocked
             : recovered
-              ? "The security check is still loading. Give it a few seconds and press Send again — your photos and captions are still here."
-              : "The security check didn't load properly. Please reload this page and choose the photographs again — sorry, that does mean picking them a second time. If it happens again, email them to contact@joeweisman.org and we'll add them for you.",
+              ? t.errTsStillLoading
+              : t.errTsBroken,
         );
         void reportClientFailure({
           stage: "verify",
@@ -560,6 +564,7 @@ export default function PhotoForm({
         images.length,
         others.map((p) => ({ name: p.file.name, size: p.file.size })),
         token,
+        lang,
       );
       if (!res.ok) {
         setError(res.error);
@@ -598,7 +603,7 @@ export default function PhotoForm({
           });
         } else {
           failures.push(
-            outcome.kind === "http" ? outcome.label : `${images[i].file.name} (connection)`,
+            outcome.kind === "http" ? outcome.label : `${images[i].file.name} (${t.connection})`,
           );
         }
         setProgress({ done: ++sent, total: picked.length });
@@ -624,7 +629,7 @@ export default function PhotoForm({
           });
         } else {
           failures.push(
-            outcome.kind === "http" ? outcome.label : `${others[i].file.name} (connection)`,
+            outcome.kind === "http" ? outcome.label : `${others[i].file.name} (${t.connection})`,
           );
         }
         setProgress({ done: ++sent, total: picked.length });
@@ -632,9 +637,7 @@ export default function PhotoForm({
 
       if (done.length === 0 && doneFiles.length === 0) {
         resetTurnstile();
-        setError(
-          `Those files couldn't be sent${failures.length ? ` — ${failures.join(", ")}` : ""}. Please try again, or email them to contact@joeweisman.org.`,
-        );
+        setError(t.errNoneSent(failures.join(", ")));
         return;
       }
       if (failures.length > 0) {
@@ -645,18 +648,18 @@ export default function PhotoForm({
 
       let savedTotal = 0;
       if (done.length > 0) {
-        const rec = await recordPhotos(done, name, email);
+        const rec = await recordPhotos(done, name, email, lang);
         if (!rec.ok) {
-          setError(rec.error ?? "Something went wrong.");
+          setError(rec.error ?? t.errGeneric);
           resetTurnstile();
           return;
         }
         savedTotal += rec.saved;
       }
       if (doneFiles.length > 0) {
-        const rec = await recordArtifactFiles(doneFiles, name, email);
+        const rec = await recordArtifactFiles(doneFiles, name, email, lang);
         if (!rec.ok) {
-          setError(rec.error ?? "Something went wrong.");
+          setError(rec.error ?? t.errGeneric);
           resetTurnstile();
           return;
         }
@@ -674,14 +677,8 @@ export default function PhotoForm({
       const detail = err instanceof Error ? err.message : String(err);
       // Name the step even in production. A visitor reporting "it failed while
       // sending" gives us something to act on; "something went wrong" does not.
-      const where = {
-        verify: "while checking the verification box",
-        tickets: "while getting ready to upload",
-        upload: "while sending the photos",
-        record: "while saving the photos — they may have uploaded already",
-      }[stage];
       setError(
-        `Something went wrong ${where}. Please try again, or email them to contact@joeweisman.org.` +
+        t.errStage(t.errAtStage[stage]) +
           (process.env.NODE_ENV === "development" ? ` [${detail}]` : ""),
       );
       void reportClientFailure({ stage, detail: detail.slice(0, 200), files: picked.length });
@@ -697,24 +694,12 @@ export default function PhotoForm({
     return (
       <div id="add" className="form-ok-block">
         <p className="form-ok" role="status">
-          Thank you &mdash; {saved === 1 ? "it has" : `all ${saved} have`} been sent.
+          {t.thanks(saved)}
         </p>
-        {saved > savedFiles && (
-          <p className="muted-note">
-            The pictures will appear in the gallery once someone has had a look at
-            them.
-          </p>
-        )}
+        {saved > savedFiles && <p className="muted-note">{t.appearOnceSeen}</p>}
         {/* Say plainly that these don't show up anywhere, so nobody goes looking
             for a recording in a gallery and concludes it was lost. */}
-        {savedFiles > 0 && (
-          <p className="muted-note">
-            {savedFiles === 1 ? "The other file is" : `The other ${savedFiles} files are`}{" "}
-            kept in the family archive rather than shown on the site. Someone will
-            look at {savedFiles === 1 ? "it" : "them"} and work out the right way to
-            share {savedFiles === 1 ? "it" : "them"}.
-          </p>
-        )}
+        {savedFiles > 0 && <p className="muted-note">{t.archivedFiles(savedFiles)}</p>}
         {/* A link that reloads the page, not a button that re-shows the form.
             Succeeding unmounts the form, which destroys the div the Turnstile
             widget was living in. Putting the form back with setSaved(0) mounts a
@@ -726,19 +711,19 @@ export default function PhotoForm({
             Carries the kind through, so someone sending artifacts stays in the
             artifacts flow rather than being dropped back into photographs. */}
         <a
-          href={defaultKind === "artifact" ? "/photos/add?kind=artifact" : "/photos/add"}
+          href={localize(defaultKind === "artifact" ? "/photos/add?kind=artifact" : "/photos/add", lang)}
           className="btn-quiet"
         >
-          Send more
+          {t.sendMore}
         </a>{" "}
         {savedKinds.includes("photo") && (
-          <Link href="/photos" className="btn-quiet">
-            View the photographs
+          <Link href={localize("/photos", lang)} className="btn-quiet">
+            {t.viewPhotos}
           </Link>
         )}{" "}
         {savedKinds.includes("artifact") && (
-          <Link href="/artifacts" className="btn-quiet">
-            View {ARTIFACTS_LABEL.toLowerCase()}
+          <Link href={localize("/artifacts", lang)} className="btn-quiet">
+            {t.viewArt}
           </Link>
         )}
       </div>
@@ -757,22 +742,20 @@ export default function PhotoForm({
       )}
 
       <section id="add" className="add-entry">
-        <h2>{defaultKind === "artifact" ? "Send something of his" : "Send your photographs"}</h2>
+        <h2>{defaultKind === "artifact" ? t.headingArt : t.headingPhotos}</h2>
         <p className="muted-note">
-          Anything at all &mdash; the boat, the commune, a sauna he built, a
-          kitchen he improved. Pictures of things he made, marked, or kept go to{" "}
-          <Link href="/artifacts">{ARTIFACTS_LABEL.toLowerCase()}</Link>; mark
-          each one below. They&rsquo;ll appear once someone has looked at them.
+          {t.introLead} <Link href={localize("/artifacts", lang)}>{t.introArtLink}</Link>
+          {t.introTail}
         </p>
 
         <form onSubmit={submit} className="form">
           <div className="field">
-            <label htmlFor="ph-files">Choose files</label>
-            {/* No accept filter. Anything of his is worth having — a recording,
-                a scan, a letter, the source to something he wrote — and an
-                allowlist would quietly refuse whichever format nobody thought
-                of. Non-pictures go to the private archive, never to a page, so
-                there is nothing to be gained by narrowing what can be sent. */}
+            <label htmlFor="ph-files">{t.chooseFiles}</label>
+            {/* No accept filter. Anything of hers is worth having — a recording,
+                a scan, a letter — and an allowlist would quietly refuse
+                whichever format nobody thought of. Non-pictures go to the
+                private archive, never to a page, so there is nothing to be
+                gained by narrowing what can be sent. */}
             <input
               id="ph-files"
               ref={fileInput}
@@ -784,12 +767,7 @@ export default function PhotoForm({
                 e.target.value = "";
               }}
             />
-            <span className="muted-note">
-              Up to {MAX_FILES} photographs at a time, 10 MB each &mdash; straight off
-              a phone is fine. Other kinds of file are welcome too: recordings,
-              scans, letters, documents, up to {MAX_OTHER_FILES} at a time and 100 MB
-              each. Those go into the family archive rather than onto the site.
-            </span>
+            <span className="muted-note">{t.limits(MAX_FILES, MAX_OTHER_FILES)}</span>
           </div>
 
           {picked.length > 0 && (
@@ -824,7 +802,7 @@ export default function PhotoForm({
                           }}
                         />
                       ) : (
-                        <span className="picked-thumb-none">no preview</span>
+                        <span className="picked-thumb-none">{t.noPreview}</span>
                       )}
                     </div>
                   )}
@@ -837,7 +815,7 @@ export default function PhotoForm({
                       disabled={busy}
                       onClick={() => forget(p)}
                     >
-                      Remove
+                      {t.remove}
                     </button>
                   </div>
                   {/* Per file rather than per submission: a batch straight off
@@ -846,11 +824,11 @@ export default function PhotoForm({
                       the admin page can move it afterwards. */}
                   {p.isImage ? (
                     <fieldset className="kind-choice">
-                      <legend className="picked-caption-label">What is this?</legend>
+                      <legend className="picked-caption-label">{t.whatIsThis}</legend>
                       {(
                         [
-                          ["photo", "Photograph of Joe"],
-                          ["artifact", "Something he made or owned"],
+                          ["photo", t.kindPhoto],
+                          ["artifact", t.kindArt],
                         ] as const
                       ).map(([value, label]) => (
                         <label key={value} className="kind-option">
@@ -876,14 +854,11 @@ export default function PhotoForm({
                     // No gallery could show a recording or a document, so there
                     // is no choice to offer — only an honest account of where it
                     // goes, rather than letting someone expect it on the site.
-                    <p className="muted-note">
-                      Not a picture &mdash; this goes into the family archive rather
-                      than a gallery.
-                    </p>
+                    <p className="muted-note">{t.notAPicture}</p>
                   )}
                   <label htmlFor={`cap-${i}`} className="picked-caption-label">
-                    {p.isImage ? "Caption" : "What is it?"}{" "}
-                    <span className="optional">(optional)</span>
+                    {p.isImage ? t.caption : t.whatIsIt}{" "}
+                    <span className="optional">{c.optional}</span>
                   </label>
                   <input
                     id={`cap-${i}`}
@@ -891,9 +866,7 @@ export default function PhotoForm({
                     maxLength={500}
                     disabled={busy}
                     placeholder={
-                      p.isImage
-                        ? "Who, where, when — whatever you remember"
-                        : "What it is, and anything we'd need to know to make sense of it"
+                      p.isImage ? t.captionPlaceholder : t.filePlaceholder
                     }
                     value={p.caption}
                     onChange={(e) =>
@@ -905,7 +878,7 @@ export default function PhotoForm({
                   {p.isImage && (
                     <>
                       <label htmlFor={`yr-${i}`} className="picked-caption-label">
-                        Year taken <span className="optional">(optional)</span>
+                        {t.yearTaken} <span className="optional">{c.optional}</span>
                       </label>
                       <span className="year-row">
                         <input
@@ -915,7 +888,7 @@ export default function PhotoForm({
                           maxLength={4}
                           className="year-input"
                           disabled={busy}
-                          placeholder="e.g. 1978"
+                          placeholder={t.yearPlaceholder}
                           value={p.year}
                           onChange={(e) =>
                             setPicked(
@@ -938,10 +911,7 @@ export default function PhotoForm({
                             today's date, which is exactly what a memorial
                             attracts — the sender is the only one who can tell. */}
                         {p.yearFromFile && (
-                          <span className="muted-note">
-                            from the file &mdash; please correct it if the photograph
-                            is older than that
-                          </span>
+                          <span className="muted-note">{t.yearFromFile}</span>
                         )}
                       </span>
                     </>
@@ -954,7 +924,7 @@ export default function PhotoForm({
 
           <div className="field">
             <label htmlFor="ph-name">
-              Your name <span className="optional">(optional)</span>
+              {c.yourName} <span className="optional">{c.optional}</span>
             </label>
             <input id="ph-name" type="text" autoComplete="name" maxLength={120}
                    disabled={busy} value={name} onChange={(e) => setName(e.target.value)} />
@@ -962,7 +932,7 @@ export default function PhotoForm({
 
           <div className="field">
             <label htmlFor="ph-email">
-              Your email <span className="optional">(optional, never shown)</span>
+              {c.yourEmail} <span className="optional">{c.optionalNeverShown}</span>
             </label>
             <input id="ph-email" type="email" autoComplete="email" maxLength={320}
                    disabled={busy} value={email} onChange={(e) => setEmail(e.target.value)} />
@@ -981,16 +951,12 @@ export default function PhotoForm({
               />
               {tsStatus === "loading" && (
                 <p className="muted-note" role="status">
-                  Loading the verification check&hellip;
+                  {t.tsLoading}
                 </p>
               )}
               {tsStatus === "error" && (
                 <p className="muted-note" role="status">
-                  Authenticating the form is taking longer than expected. Try
-                  reloading the page — if the verification check still
-                  doesn&rsquo;t appear, an ad blocker or privacy extension may be
-                  blocking it, or you can email the photos to contact@joeweisman.org
-                  instead.
+                  {t.tsSlow}
                 </p>
               )}
             </div>
@@ -1007,24 +973,24 @@ export default function PhotoForm({
               {/* We are no longer refreshing anything, only waiting for the
                   widget to finish. Saying "refreshing" implied we had restarted
                   it, which is what the removed reset actually did. */}
-              Waiting for the verification check&hellip; this takes a moment.
+              {t.waiting}
             </p>
           )}
 
           {progress && !verifying && (
             <p className="muted-note" role="status">
-              Sending {progress.done} of {progress.total}…
+              {t.progress(progress.done, progress.total)}
             </p>
           )}
 
           <button type="submit" disabled={busy || picked.length === 0}>
             {verifying
-              ? "Verifying…"
+              ? t.verifyingButton
               : busy
-                ? "Sending…"
+                ? c.sending
                 : picked.length > 1
-                  ? `Send ${picked.length} files`
-                  : "Send"}
+                  ? t.sendN(picked.length)
+                  : t.send}
           </button>
         </form>
       </section>

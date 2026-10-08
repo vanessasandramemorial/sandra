@@ -1,3 +1,5 @@
+import { basePath, type Dictionary } from "./i18n";
+
 /**
  * The site's sections, in nav order.
  *
@@ -24,30 +26,24 @@
  * cost is one slower navigation on three pages; the alternative is a form that
  * cannot be submitted. **Do not turn these back into <Link>.**
  */
-export const NEEDS_FULL_LOAD = ["/photos/add", "/guestbook/add", "/subscribe", "/rsvp"];
+export const NEEDS_FULL_LOAD = ["/photos/add", "/guestbook/add", "/subscribe"];
 
-/** True when a href lands on a page that renders a Turnstile widget. */
+/** True when a href, in either language, lands on a page that renders a Turnstile widget. */
 export function needsFullLoad(href: string): boolean {
-  const path = href.split("?")[0];
+  const path = basePath(href.split("?")[0]);
   return NEEDS_FULL_LOAD.includes(path);
 }
 
 /**
- * What the artifacts section is called, in one place.
+ * The menu, in order. `href` is the English path — localize() gives the
+ * Spanish one — and `key` names the label in the dictionary (src/lib/i18n.ts).
  *
- * The name is not settled — "Artifacts" is accurate but cooler in tone than the
- * rest of the nav, and something plainer may replace it. Everything that shows
- * the word reads it from here so that change stays a single edit. The URL is
- * deliberately not derived from it: /artifacts will already be in emails and
- * printed material, and a renamed section must not break those links.
+ * The art section's URL is /artifacts and deliberately stays that way whatever
+ * the section is called: it will already be in emails and printed material.
  */
-export const ARTIFACTS_LABEL = "Artifacts";
-
 export const SECTIONS = [
-  { href: "/service", label: "The Service" },
-  { href: "/photos", label: "Photographs" },
-  { href: "/artifacts", label: ARTIFACTS_LABEL },
-  { href: "/guestbook", label: "Guestbook" },
-  { href: "/recipes", label: "Recipes" },
-  { href: "/subscribe", label: "Stay in touch" },
-] as const;
+  { href: "/photos", key: "photos" },
+  { href: "/artifacts", key: "art" },
+  { href: "/guestbook", key: "guestbook" },
+  { href: "/subscribe", key: "subscribe" },
+] as const satisfies readonly { href: string; key: keyof Dictionary["nav"] }[];

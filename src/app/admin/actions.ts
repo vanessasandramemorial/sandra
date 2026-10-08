@@ -23,6 +23,8 @@ function revalidateGalleries(): void {
   revalidatePath("/admin");
   revalidatePath("/photos");
   revalidatePath("/artifacts");
+  revalidatePath("/es/photos");
+  revalidatePath("/es/artifacts");
 }
 
 export async function login(_prev: LoginState, formData: FormData): Promise<LoginState> {
@@ -55,6 +57,7 @@ export async function setEntryStatus(id: string, status: "published" | "removed"
   await db()`update guestbook_entries set status = ${status} where id = ${id}::uuid`;
   revalidatePath("/admin");
   revalidatePath("/guestbook");
+  revalidatePath("/es/guestbook");
 }
 
 /**

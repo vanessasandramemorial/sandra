@@ -8,6 +8,7 @@ import { db } from "@/lib/db";
 import { hashIp } from "@/lib/ip";
 import { recentCountForIp } from "@/lib/guestbook";
 import { verifyTurnstile } from "@/lib/turnstile";
+import { DATE_LOCALE, dict, parseLocale } from "@/lib/i18n";
 
 export type GuestbookState = { status: "idle" | "ok" | "error"; message?: string };
 
@@ -21,28 +22,31 @@ export async function signGuestbook(
   _prev: GuestbookState,
   formData: FormData,
 ): Promise<GuestbookState> {
+  const lang = parseLocale(formData.get("lang"));
+  const t = dict(lang).guestbookActions;
+
   if ((formData.get("website") as string | null)?.trim()) {
     // Honeypot hit. Report success so the bot learns nothing; write nothing.
-    return { status: "ok", message: "Thank you for writing." };
+    return { status: "ok", message: t.thanks };
   }
 
   const name = (formData.get("name") as string | null)?.trim() ?? "";
   const message = (formData.get("message") as string | null)?.trim() ?? "";
   const email = (formData.get("email") as string | null)?.trim() ?? "";
 
-  if (!name) return { status: "error", message: "Please add your name." };
-  if (!message) return { status: "error", message: "Please write a message." };
+  if (!name) return { status: "error", message: t.needName };
+  if (!message) return { status: "error", message: t.needMessage };
   if (name.length > MAX_NAME) {
-    return { status: "error", message: "That name is longer than we can store." };
+    return { status: "error", message: t.nameTooLong };
   }
   if (message.length > MAX_MESSAGE) {
     return {
       status: "error",
-      message: `That's longer than we can store — ${MAX_MESSAGE.toLocaleString()} characters is the limit.`,
+      message: t.messageTooLong(MAX_MESSAGE.toLocaleString(DATE_LOCALE[lang])),
     };
   }
   if (email.length > MAX_EMAIL) {
-    return { status: "error", message: "That email address is too long." };
+    return { status: "error", message: t.emailTooLong };
   }
 
   const hdrs = await headers();
@@ -56,15 +60,11 @@ export async function signGuestbook(
     ip,
     "deny",
   );
-  if (!check.ok) return { status: "error", message: check.error };
+  if (!check.ok) return { status: "error", message: dict(lang).turnstile[check.code ?? "rejected"] };
 
   try {
     if ((await recentCountForIp(ipHash)) >= HOURLY_LIMIT) {
-      return {
-        status: "error",
-        message:
-          "That's several messages in a short time. Please wait a little while, or write to contact@joeweisman.org.",
-      };
+      return { status: "error", message: t.rateLimited };
     }
 
     // Published immediately — historic/HISTORY.md §1. A tribute that vanishes
@@ -82,19 +82,16 @@ export async function signGuestbook(
     `;
   } catch (e) {
     console.error("Failed to record a guestbook entry:", e);
-    return {
-      status: "error",
-      message:
-        "Something went wrong saving that. Please try again, or write to contact@joeweisman.org.",
-    };
+    return { status: "error", message: t.saveFailed };
   }
 
   revalidatePath("/guestbook");
+  revalidatePath("/es/guestbook");
 
   // after() runs once the response has been sent, so the writer isn't kept
   // waiting on an email round trip. It also survives the serverless function
   // returning, which a bare floating promise would not.
   after(() => notifyGuestbookEntry({ name, message, email: email || null }));
 
-  return { status: "ok", message: "Thank you for writing." };
+  return { status: "ok", message: t.thanks };
 }

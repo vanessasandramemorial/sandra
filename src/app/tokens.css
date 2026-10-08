@@ -180,6 +180,17 @@ body {
   .wordmark { flex-basis: auto; text-align: left; }
 }
 
+/* English | Español. Its own line under the menu, so it is never mistaken for
+   a section, and it stays in the same place on every page. */
+.langswitch {
+  flex-basis: 100%;
+  margin: .2rem 0 0;
+  text-align: center;
+  font-size: var(--size-small);
+  color: var(--muted);
+}
+.langswitch [aria-current] { color: var(--muted); }
+
 .skip {
   position: absolute;
   left: -9999px;
