@@ -4,7 +4,8 @@ import { db } from "@/lib/db";
 import { formatDate, formatDateTime } from "@/lib/guestbook";
 import { isAdmin } from "@/lib/admin-auth";
 import { thumbUrl } from "@/lib/cf-images";
-import { logout } from "./actions";
+import { logout, setEntryName } from "./actions";
+import ContactFieldEditor from "./contact-field-editor";
 import LoginForm from "./login-form";
 import EntryActions from "./entry-actions";
 import PhotoActions from "./photo-actions";
@@ -372,7 +373,12 @@ export default async function AdminPage() {
             <article key={e.id} className={e.status === "removed" ? "entry is-removed" : "entry"}>
               <header className="entry-head">
                 <span className="entry-name">
-                  {e.name}
+                  <ContactFieldEditor
+                    id={e.id}
+                    value={e.name}
+                    placeholder="(no name)"
+                    onSave={setEntryName}
+                  />
                   {e.status === "removed" && <span className="tag">hidden</span>}
                 </span>
                 <span className="entry-date">

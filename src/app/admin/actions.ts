@@ -60,6 +60,27 @@ export async function setEntryStatus(id: string, status: "published" | "removed"
   revalidatePath("/es/guestbook");
 }
 
+const MAX_ENTRY_NAME = 120;
+
+/**
+ * Change the name an entry is signed with — a typo, or a family asking to sign
+ * as a household. The message itself is never editable here: it is the
+ * writer's own words. The original submission survives in contact_log.
+ *
+ * A blank name is ignored rather than saved, since every entry is "From"
+ * someone and the public page has nothing to show in its place.
+ */
+export async function setEntryName(id: string, name: string): Promise<void> {
+  if (!(await isAdmin())) throw new Error("Not authorised.");
+
+  const trimmed = name.trim().slice(0, MAX_ENTRY_NAME);
+  if (!trimmed) return;
+  await db()`update guestbook_entries set name = ${trimmed} where id = ${id}::uuid`;
+  revalidatePath("/admin");
+  revalidatePath("/guestbook");
+  revalidatePath("/es/guestbook");
+}
+
 /**
  * Approve or reject a photo.
  *
