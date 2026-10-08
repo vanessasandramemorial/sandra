@@ -4,9 +4,9 @@
 This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
 <!-- END:nextjs-agent-rules -->
 
-# joeweisman.org
+# sandraaponte.org
 
-A memorial site. Read `ARCHITECTURE.md` before any structural change — it describes
+A memorial site, in English and Spanish. Read `ARCHITECTURE.md` before any structural change — it describes
 what the site is, and why, as of today. `historic/HISTORY.md` has the fuller decision
 story for anyone curious. `README.md` covers running and deploying.
 

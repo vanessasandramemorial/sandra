@@ -1,14 +1,39 @@
-# Claude guidance for joeweisman.org
+# Claude guidance for sandraaponte.org
 
 @AGENTS.md
 
 ## Project context
 
-A memorial site for Joe Weisman (1944–2026), built by his child Jazz. Next.js 16
-(App Router, TypeScript) on Vercel, deploying from `main`. Obituary and service
-details render from Markdown in `content/`; a photo gallery with public submissions,
-a guestbook, and email collection are live (see `README.md` "The services" for what's
-deployed where).
+A memorial site for Sandra Ivelisse Aponte Santiago (1952–2026), maintained by her
+daughter Vanessa. It is a fork of the Joe Weisman memorial
+(github.com/jazzlw/joeweisman, the `upstream` remote). Next.js 16 (App Router,
+TypeScript) on Vercel, deploying from `main` of the public repo
+`vanessaperegrine/sandra`. The obituary renders from Markdown in `content/`; a photo
+gallery and an "Art" gallery with public submissions, a guestbook, and email
+collection are live (see `README.md` "The services" for what's deployed where).
+There is no service page: the service is private.
+
+The site is bilingual. English is at the bare paths and Puerto Rican Spanish, using
+*usted*, mirrors it under `/es` — see `ARCHITECTURE.md` → "Two languages".
+
+## Working with Vanessa
+
+- **She reviews before anything is published.** Make changes locally, show them in
+  the preview (`npm run dev -- -p 3117`), and push to `main` only when she says to
+  publish. Pushing to `main` is publishing.
+- **Every obituary change goes into both** `content/obituary.md` and
+  `content/obituary.es.md`; every wording change into both halves of
+  `src/lib/i18n.ts`.
+- **Names kept off the site, permanently**, because the repo is public and history
+  can't be taken back: Sandra's grandchildren, her daughters' husbands, and her
+  former partners. No date or place for the service.
+- **Confirming a deploy:** after a push, read the Vercel status with
+  `gh api repos/vanessaperegrine/sandra/commits/<sha>/status`, then check the live
+  page once in a browser. Don't poll the site with curl in a loop — Vercel's bot
+  protection answers bursts with a "Security Checkpoint" page, which looks like a
+  failed deploy.
+- **Backups** go to a dated folder in `~/Documents` (never inside this repo), which
+  she then drags into the memorial Gmail's Google Drive. See `README.md` → "Backups".
 
 Treat the subject with care. The people reading this site are grieving, and much
 of the content is about a real person recently dead. Plainness beats cleverness in
@@ -31,7 +56,11 @@ eval "$(fnm env --shell bash)"
 fnm use 22
 ```
 
-`npm run dev -- -p 3117`. Port 3117, not 3000 (by request of the original developer). Never kill a process by name to free a port; find another port.
+`npm run dev -- -p 3117`. Port 3117, not 3000 (by request of the original developer). Never kill a process by name to free a port; find another port. `.claude/launch.json` (local only, not committed) starts it for the preview pane.
+
+In `.env.local`, never leave a comment on the same line as a value
+(`KEY=   # note`): `scripts/*.mjs` read everything after `=` as the value, so
+the comment becomes the credential. Put comments on their own line.
 
 ## Commands
 
@@ -56,20 +85,32 @@ everyone out, a failing notification never throwing).
 
 ## Architecture
 
-**Content vs. app code.** `content/*.md` (obituary, service) is read from the
-filesystem and rendered by `src/lib/content.ts` via `marked` — this is the *only*
-place `dangerouslySetInnerHTML` is used, because it's our own trusted Markdown.
-`content/recipes/` is the opposite case: Joe's original files, rendered byte-for-byte
-via `src/lib/recipes.ts`, never reformatted (see the README in that directory).
-Unfilled `XXXX` placeholders in content are surfaced as build-log warnings by
-`content.ts`, not build failures.
+**Content vs. app code.** `content/*.md` (the obituary in `obituary.md` and
+`obituary.es.md`, and `how-to-make-this.md`) is read from the filesystem and
+rendered by `src/lib/content.ts` via `marked` — this is the *only* place
+`dangerouslySetInnerHTML` is used, because it's our own trusted Markdown. Internal
+links in the Spanish obituary point at `/es/...` paths. Unfilled `XXXX`
+placeholders in content are surfaced as build-log warnings by `content.ts`, not
+build failures.
+
+**Two languages, one set of views.** Every visitor-facing string lives in
+`src/lib/i18n.ts`, typed so the `es` dictionary can't drift out of shape from
+`en`. Each public route's markup is a `view.tsx` taking `lang`; `page.tsx` renders
+it with `"en"` and the wrapper under `src/app/es/` with `"es"`. Route config
+(`revalidate`, `dynamic`) must be repeated as a literal in both page files. Use
+`localize(path, lang)` for internal links and `needsFullLoad` (which understands
+`/es`) for Turnstile pages. Forms post a hidden `lang` field so server actions
+answer in it; `verifyTurnstile` returns a `code` for the same reason. Any
+`revalidatePath` must also clear the `/es` twin. Admin pages and admin emails are
+English only.
 
 **Feature module shape.** Each public form (`guestbook/`, `photos/`, `subscribe/`)
-follows the same three-file pattern: `page.tsx` (server component) + `form.tsx`
-(client component, Turnstile widget + `useActionState`) + `actions.ts` (`"use
-server"`, validates input, calls a query function in `src/lib/{feature}.ts`, then
-`revalidatePath` and an `after()`-deferred admin email via `notify.ts`). Follow this
-shape for any new visitor-facing form rather than inventing a new one.
+follows the same pattern: `page.tsx` (server component, plus its `/es` twin and a
+shared `view.tsx`) + `form.tsx` (client component, Turnstile widget +
+`useActionState`) + `actions.ts` (`"use server"`, validates input, calls a query
+function in `src/lib/{feature}.ts`, then `revalidatePath` and an `after()`-deferred
+admin email via `notify.ts`). Follow this shape for any new visitor-facing form
+rather than inventing a new one.
 
 **Data layer.** Neon Postgres, reached only through `src/lib/db.ts` (a lazy pooled
 client) — the browser never touches the database directly. Schema changes are
@@ -91,9 +132,9 @@ curated assets (`public/`).
 is `'photo' | 'artifact'`; `/photos` and `/artifacts` are the same `Gallery`
 component over `getApprovedPhotos(kind)`, which takes the kind explicitly so a
 third gallery can't silently start dropping rows out of an existing one. The
-section's display name lives in `ARTIFACTS_LABEL` (`src/lib/sections.ts`) because
-it may change; the `/artifacts` URL deliberately doesn't derive from it, since
-that URL ends up in email and print.
+section is shown as "Art" / "Arte" (`nav.art` in `src/lib/i18n.ts`) and holds
+Sandra's paintings and her glass mosaic; the `/artifacts` URL deliberately doesn't
+follow the name, since that URL ends up in email and print.
 
 **Submissions that aren't photographs go to `artifact_files`, never to
 `photos`.** They have no Cloudflare Images id and no viewable derivative, so
@@ -174,9 +215,8 @@ at build time, a year-three failure mode `ARCHITECTURE.md` → "Design system" e
 ## What must never be committed
 
 **This repository is public, and git history cannot be taken back.** Removing a
-file in a later commit does not remove it from history — the forwarded-email
-recipe needed the file scrubbed *and* render-time backstops in `recipes.ts`,
-because the original was already out there.
+file in a later commit does not remove it from history; once something is pushed,
+it is out there for good.
 
 Never commit, in any file:
 
@@ -187,6 +227,11 @@ Never commit, in any file:
 - **Secrets.** `.env.local`. `.env.example` is the committed template.
 - **Design working files.** `/invitation/`, `*.ai`. Large binaries that sit in
   history forever, and the kind of file that quietly embeds a recipient list.
+- **Backups.** The photo archive and database exports live outside the repo, in a
+  dated folder under `~/Documents`.
+- **Family names Vanessa has kept off the site** — see "Working with Vanessa".
+- **Photographs with metadata.** Anything added to `public/` must have its EXIF
+  stripped first; phone photos carry GPS coordinates and the camera model.
 
 **The rule extends to code comments and commit messages, which is where it
 actually goes wrong.** A good comment explains *why*, and the most convincing
@@ -196,7 +241,7 @@ documentation. One of them named a living relative. It was caught by being asked
 "what becomes public?" before the commit, not by anything automatic.
 
 Make the argument in the abstract instead: "most people use 'we' to describe how
-they knew Joe, in the past tense" carries the same reasoning and quotes nobody.
+they knew Sandra, in the past tense" carries the same reasoning and quotes nobody.
 If a real example seems necessary, invent one.
 
 Before committing anything that touched submitted data, grep the staged diff for
@@ -205,22 +250,21 @@ names and addresses. `git diff --cached` is the last point at which this is free
 ## Git commits
 
 - **Run `git pull --ff-only origin main` before you edit anything. Not `fetch` —
-  `pull`.** More than one person works on this repo. `git fetch` updates the
-  remote-tracking ref and leaves the working copy exactly where it was, so it is
-  possible to get a correct answer about the remote while still patching stale
-  files. Reading the "behind by N commits" line is not enough either: knowing you
-  are behind and editing anyway is the same bug.
-
-  This has now happened twice. First, six of Luke's commits landed between a pull
-  and the next fetch, and edits were written against his older versions of files
-  he had since rewritten. Then again: a whole session of recipe edits was made
-  against a checkout two hours stale, and the only thing that caught it was a
-  fetch at commit time that rejected the push. It was luck, not process, and
-  describing it afterwards as "he pushed while I was working" was wrong — he had
-  pushed long before the work started.
+  `pull`.** Changes can also arrive from GitHub's web editor or another machine.
+  `git fetch` updates the remote-tracking ref and leaves the working copy exactly
+  where it was, so it is possible to get a correct answer about the remote while
+  still patching stale files. Reading the "behind by N commits" line is not enough
+  either: knowing you are behind and editing anyway is the same bug. The original
+  project lost a session's work this way.
 
   Pull at the start of the task, and pull again before a commit if any real time
   has passed.
+- **Updates from the original project** come in with `git fetch upstream && git
+  merge upstream/main` (see `FORKING.md` → "Staying in sync"). Files listed in
+  `.gitattributes` stay ours automatically; everything else — including this file,
+  the `view.tsx` files, and the pages whose strings moved into `src/lib/i18n.ts` —
+  may conflict, because upstream is English-only. Resolve by keeping both
+  languages working.
 - **Do not include Claude attribution in commit messages.** No `Co-Authored-By`,
   no "Generated with" footer.
 - **Never `git add -A` or `git add .`** — stage explicit paths, or `git add -u`.
