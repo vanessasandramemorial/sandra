@@ -20,7 +20,7 @@ She was a deeply spiritual person, and read widely about spiritual topics. She l
 
 She is survived by her daughters, Vanessa and Viviana; her four grandchildren; and her sisters, Awilda and Sheila. She was preceded in death by her sister Ivette.
 
-Her warmth, her curiosity, and her faith in others live on in everyone she touched.
+Her devotion to her family and friends, her fearless sense of adventure, and her love of life live on in everyone she touched.
 
 A private service will be held for her family. In lieu of flowers, the family invites you to help carry on her legacy by supporting one of the [causes close to Sandra’s heart](/legacy).
 

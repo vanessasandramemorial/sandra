@@ -20,7 +20,7 @@ Era una persona profundamente espiritual, y leía mucho sobre temas espirituales
 
 Le sobreviven sus hijas, Vanessa y Viviana; sus cuatro nietos; y sus hermanas, Awilda y Sheila. La precedió en la muerte su hermana Ivette.
 
-Su calidez, su curiosidad y su fe en los demás siguen vivas en todas las personas que tocó.
+Su devoción por su familia y sus amistades, su espíritu aventurero e intrépido y su amor por la vida siguen vivos en todas las personas que tocó.
 
 Se llevará a cabo un servicio privado para su familia. En lugar de flores, la familia le invita a ayudar a continuar su legado apoyando una de las [causas que Sandra llevaba en el corazón](/es/legacy).
 
