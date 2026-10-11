@@ -74,8 +74,8 @@ export async function signGuestbook(
       values (${name}, ${message}, ${email || null}, ${ipHash}, 'published')
     `;
 
-    // Every visitor action lands in contact_log, not just mailing-list and
-    // RSVP signups — see subscribe/actions.ts for the rest of the writers.
+    // Every visitor action lands in contact_log — photos/actions.ts writes the
+    // rest.
     await db()`
       insert into contact_log (type, email, name, detail)
       values ('guestbook', ${email || null}, ${name}, ${message})

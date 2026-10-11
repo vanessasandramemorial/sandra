@@ -189,8 +189,8 @@ export async function recordArtifactFiles(
 
   revalidatePath("/admin");
 
-  // Every visitor action lands in contact_log — see subscribe/actions.ts for
-  // the rest of the writers. One row for the whole batch, not per file.
+  // Every visitor action lands in contact_log — guestbook/actions.ts writes the
+  // rest. One row for the whole batch, not per file.
   await db()`
     insert into contact_log (type, email, name, detail, count)
     values ('file', ${mail || null}, ${name || null},
@@ -303,9 +303,9 @@ export async function recordPhotos(
 
   revalidatePath("/admin");
 
-  // Every visitor action lands in contact_log — see subscribe/actions.ts for
-  // the rest of the writers. One row per gallery, not per photo: a batch of
-  // twelve is one row with count = 12.
+  // Every visitor action lands in contact_log — guestbook/actions.ts writes the
+  // rest. One row per gallery, not per photo: a batch of twelve is one row with
+  // count = 12.
   for (const [kind, group] of savedByKind) {
     await db()`
       insert into contact_log (type, email, name, detail, count)

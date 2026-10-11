@@ -104,7 +104,7 @@ answer in it; `verifyTurnstile` returns a `code` for the same reason. Any
 `revalidatePath` must also clear the `/es` twin. Admin pages and admin emails are
 English only.
 
-**Feature module shape.** Each public form (`guestbook/`, `photos/`, `subscribe/`)
+**Feature module shape.** Each public form (`guestbook/`, `photos/`)
 follows the same pattern: `page.tsx` (server component, plus its `/es` twin and a
 shared `view.tsx`) + `form.tsx` (client component, Turnstile widget +
 `useActionState`) + `actions.ts` (`"use server"`, validates input, calls a query

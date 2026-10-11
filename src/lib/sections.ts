@@ -26,7 +26,7 @@ import { basePath, type Dictionary } from "./i18n";
  * cost is one slower navigation on three pages; the alternative is a form that
  * cannot be submitted. **Do not turn these back into <Link>.**
  */
-export const NEEDS_FULL_LOAD = ["/photos/add", "/guestbook/add", "/subscribe"];
+export const NEEDS_FULL_LOAD = ["/photos/add", "/guestbook/add"];
 
 /** True when a href, in either language, lands on a page that renders a Turnstile widget. */
 export function needsFullLoad(href: string): boolean {
@@ -46,5 +46,4 @@ export const SECTIONS = [
   { href: "/artifacts", key: "art" },
   { href: "/guestbook", key: "guestbook" },
   { href: "/legacy", key: "legacy" },
-  { href: "/subscribe", key: "subscribe" },
 ] as const satisfies readonly { href: string; key: keyof Dictionary["nav"] }[];
