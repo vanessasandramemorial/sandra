@@ -10,6 +10,8 @@ Subvenciones directas y rápidas para microrredes solares y sistemas de agua en 
 
 [Más información en prxpr.org](https://prxpr.org)
 
+{{support:prxpr}}
+
 <!-- Oculto por ahora. Para mostrar KIND otra vez, borre esta línea y la línea "fin de oculto" abajo.
 
 ## Kids in Need of Defense (KIND)
@@ -17,6 +19,8 @@ Subvenciones directas y rápidas para microrredes solares y sistemas de agua en 
 Representación legal gratuita para niños inmigrantes no acompañados en los Estados Unidos. Sandra comenzó su carrera en Boston ayudando a familias inmigrantes a encontrar vivienda y empleo.
 
 [Más información en supportkind.org](https://supportkind.org/get-involved/give-to-kind/)
+
+{{support:kind}}
 
 fin de oculto -->
 
@@ -27,11 +31,15 @@ Cubre la necesidad económica de estudiantes inmigrantes indocumentados que no p
 
 [Más información en thedream.us](https://www.thedream.us)
 
+{{support:thedream}}
+
 ## Latinos for Education
 
 Apoya a maestros hispanos, ayuda a las escuelas a retener a educadores bilingües y trabaja por políticas escolares que sirvan bien a las familias inmigrantes. Sandra misma fue maestra bilingüe y consejera escolar.
 
 [Más información en latinosforeducation.org](https://latinosforeducation.org)
+
+{{support:latinos-for-education}}
 
 ## Déjenos saber
 

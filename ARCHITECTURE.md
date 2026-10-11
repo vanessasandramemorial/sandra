@@ -85,7 +85,12 @@ Cloudflare Images is never the only copy of anything that's been approved.
 Public, in nav order (`src/lib/sections.ts`): `/photos` (with
 `/photos/add`), `/artifacts` (shown as "Art"), `/guestbook` (with
 `/guestbook/add`), `/legacy` (shown as "Her Legacy": causes she cared about, from `content/legacy.md`)
-— plus the home page `/` and `/how-to-make-this`. There is no public mailing-list
+— plus the home page `/` and `/how-to-make-this`. Each cause on `/legacy` has an
+"I supported this" button and a count (`legacy_causes`, `db/016`), placed by a
+`{{support:slug}}` line in the Markdown. The button has no Turnstile on purpose:
+it writes one number, not anyone's words, so it is guarded by a per-IP-hash rate
+limit instead, and the family can set any count in `/admin`. A visitor can undo
+their own press with the id their browser kept. There is no public mailing-list
 signup; the contacts already collected stay readable and exportable in `/admin`.
 
 ### Two languages

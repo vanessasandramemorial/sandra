@@ -7,6 +7,9 @@ export const metadata: Metadata = {
   alternates: alternatesFor("/legacy", "es"),
 };
 
+// Same caching as the English page; see src/app/legacy/page.tsx.
+export const revalidate = 60;
+
 export default function LegacyPage() {
   return <Legacy lang="es" />;
 }

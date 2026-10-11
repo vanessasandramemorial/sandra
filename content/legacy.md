@@ -10,6 +10,8 @@ Direct, fast-acting grants for solar microgrids and water systems in Puerto Rico
 
 [Learn more at prxpr.org](https://prxpr.org)
 
+{{support:prxpr}}
+
 <!-- Hidden for now. To show KIND again, delete this line and the "end hidden" line below.
 
 ## Kids in Need of Defense (KIND)
@@ -17,6 +19,8 @@ Direct, fast-acting grants for solar microgrids and water systems in Puerto Rico
 Free legal representation for unaccompanied immigrant children in the United States. Sandra began her career in Boston helping immigrant families find homes and work.
 
 [Learn more at supportkind.org](https://supportkind.org/get-involved/give-to-kind/)
+
+{{support:kind}}
 
 end hidden -->
 
@@ -27,11 +31,15 @@ Bridges the financial gap for undocumented immigrant students who can’t receiv
 
 [Learn more at thedream.us](https://www.thedream.us)
 
+{{support:thedream}}
+
 ## Latinos for Education
 
 Supports Hispanic teachers, helps schools keep bilingual educators, and works for public school policies that serve immigrant families well. Sandra was a bilingual teacher and a school counselor herself.
 
 [Learn more at latinosforeducation.org](https://latinosforeducation.org)
+
+{{support:latinos-for-education}}
 
 ## Let us know
 

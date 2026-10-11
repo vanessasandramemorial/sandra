@@ -4,7 +4,8 @@ import { db } from "@/lib/db";
 import { formatDate, formatDateTime } from "@/lib/guestbook";
 import { isAdmin } from "@/lib/admin-auth";
 import { thumbUrl } from "@/lib/cf-images";
-import { logout, setEntryName } from "./actions";
+import { logout, setEntryName, setLegacyCountFromAdmin } from "./actions";
+import { getLegacyCounts, LEGACY_NAMES, LEGACY_SLUGS } from "@/lib/legacy";
 import ContactFieldEditor from "./contact-field-editor";
 import LoginForm from "./login-form";
 import EntryActions from "./entry-actions";
@@ -143,6 +144,15 @@ export default async function AdminPage() {
     rotation: number;
   }[];
 
+  // The Her Legacy counts. If the table can't be read, the section says so
+  // rather than taking the moderation page down with it.
+  let legacyCounts: Awaited<ReturnType<typeof getLegacyCounts>> | null = null;
+  try {
+    legacyCounts = await getLegacyCounts();
+  } catch (e) {
+    console.error("Failed to load legacy counts:", e);
+  }
+
   // A failure here shouldn't cost the whole admin page — photos and the
   // guestbook still need moderating if R2 or this table is unhappy.
   let files: Awaited<ReturnType<typeof getArtifactFiles>> = [];
@@ -231,6 +241,31 @@ export default async function AdminPage() {
           {counts.photos_unarchived === 1 ? "photograph is" : "photographs are"} live but not
           yet copied to the archive. Run <code>npm run archive</code> to fix.
         </p>
+      )}
+
+      <h2>Her Legacy</h2>
+      <p className="muted-note">
+        How many people have said they supported each cause. Visitors add to these with the
+        button on the page; click E to set a number yourself. A cause at 0 shows no count.
+      </p>
+      {legacyCounts ? (
+        <dl className="stats">
+          {LEGACY_SLUGS.map((slug) => (
+            <div key={slug}>
+              <dt>{LEGACY_NAMES[slug]}</dt>
+              <dd>
+                <ContactFieldEditor
+                  id={slug}
+                  value={String(legacyCounts[slug])}
+                  placeholder="0"
+                  onSave={setLegacyCountFromAdmin}
+                />
+              </dd>
+            </div>
+          ))}
+        </dl>
+      ) : (
+        <p className="form-error">The counts can&rsquo;t be loaded just now.</p>
       )}
 
       <h2>Mailing list</h2>

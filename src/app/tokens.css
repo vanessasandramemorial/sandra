@@ -377,6 +377,21 @@ body {
 }
 .btn-quiet:hover { border-color: currentColor; }
 .btn-quiet[disabled] { opacity: .5; cursor: default; }
+
+/* Her Legacy: the count and "I supported this" button under each cause.
+   A taller button than elsewhere — this is the one most likely to be tapped
+   on a phone by someone who doesn't use one much. */
+.legacy-support { margin: var(--s3) 0 var(--s4); }
+.legacy-support .btn-quiet { min-height: 44px; }
+.prose .legacy-count { margin: 0 0 var(--s2); color: var(--text); font-size: var(--size-small); }
+.legacy-count span { color: var(--link); }
+.prose .legacy-support .muted-note { margin: 0; }
+/* "Undo" reads as a link but is a button: it acts, it doesn't navigate. */
+.link-button {
+  background: none; border: 0; padding: .4rem 0; margin: 0; min-height: 44px;
+  font: inherit; color: var(--link); text-decoration: underline; cursor: pointer;
+}
+.link-button[disabled] { opacity: .5; cursor: default; }
 .btn-danger { color: #A33A2A; }
 @media (prefers-color-scheme: dark) { .btn-danger { color: #E39385; } }
 

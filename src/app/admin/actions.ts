@@ -7,6 +7,7 @@ import { archivePhotoQuietly } from "@/lib/archive";
 import { deleteObject } from "@/lib/r2";
 import { parseYear } from "@/lib/exif";
 import { parseKind } from "@/lib/photos";
+import { isLegacySlug, setLegacyCount } from "@/lib/legacy";
 import { checkPassword, grantSession, revokeSession, isAdmin } from "@/lib/admin-auth";
 
 export type LoginState = { error?: string };
@@ -58,6 +59,24 @@ export async function setEntryStatus(id: string, status: "published" | "removed"
   revalidatePath("/admin");
   revalidatePath("/guestbook");
   revalidatePath("/es/guestbook");
+}
+
+/**
+ * Set how many people have supported a cause on the Her Legacy page — for
+ * people who said so in person or in a guestbook message, or to correct a
+ * count. Takes the number as typed; anything that isn't a whole number from 0
+ * up is ignored rather than saved.
+ */
+export async function setLegacyCountFromAdmin(slug: string, value: string): Promise<void> {
+  if (!(await isAdmin())) throw new Error("Not authorised.");
+  if (!isLegacySlug(slug)) return;
+
+  const n = Number.parseInt(value.trim(), 10);
+  if (!Number.isInteger(n) || n < 0 || n > 100_000 || String(n) !== value.trim()) return;
+  await setLegacyCount(slug, n);
+  revalidatePath("/admin");
+  revalidatePath("/legacy");
+  revalidatePath("/es/legacy");
 }
 
 const MAX_ENTRY_NAME = 120;

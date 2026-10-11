@@ -96,6 +96,19 @@ const en = {
     obituary: "Sandra’s obituary",
     stuck: "Still stuck? Write to",
   },
+  legacy: {
+    count: (n: number) =>
+      n === 1
+        ? "1 person has supported this in Sandra’s memory"
+        : `${n} people have supported this in Sandra’s memory`,
+    button: "I supported this in Sandra’s memory",
+    sending: "Counting…",
+    thanks: "Thank you — you’ve been counted.",
+    undo: "Undo",
+    undoing: "Removing…",
+    limited: "Thank you — you’ve already been counted today.",
+    error: "That didn’t go through just now. Please try again in a moment.",
+  },
   photos: {
     addMore: "Add More Photographs",
     reloadNote: "Note: If some of the pictures are not loading, please hit your browser reload button.",
@@ -295,6 +308,19 @@ const es: Dictionary = {
     body: "Puede que la dirección se haya escrito mal, o que la página no exista. Todo lo que hay en el sitio está aquí abajo.",
     obituary: "El obituario de Sandra",
     stuck: "¿Todavía no encuentra lo que busca? Escriba a",
+  },
+  legacy: {
+    count: (n: number) =>
+      n === 1
+        ? "1 persona ha apoyado esta causa en memoria de Sandra"
+        : `${n} personas han apoyado esta causa en memoria de Sandra`,
+    button: "Apoyé esta causa en memoria de Sandra",
+    sending: "Contando…",
+    thanks: "Gracias — ya lo contamos.",
+    undo: "Deshacer",
+    undoing: "Quitando…",
+    limited: "Gracias — ya lo contamos hoy.",
+    error: "No se pudo registrar en este momento. Por favor intente de nuevo en un rato.",
   },
   photos: {
     addMore: "Añadir más fotos",

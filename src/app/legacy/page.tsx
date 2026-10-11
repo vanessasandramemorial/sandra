@@ -7,6 +7,10 @@ export const metadata: Metadata = {
   alternates: alternatesFor("/legacy", "en"),
 };
 
+// Cached, like the galleries: a press calls revalidatePath("/legacy"), so the
+// new count shows at once, and this is only the backstop for edits in /admin.
+export const revalidate = 60;
+
 export default function LegacyPage() {
   return <Legacy lang="en" />;
 }
