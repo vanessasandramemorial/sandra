@@ -8,7 +8,7 @@ In lieu of flowers, Sandra’s family invites you to help carry her legacy forwa
 
 Direct, fast-acting grants for solar microgrids and water systems in Puerto Rico, especially in rural communities — for the island where Sandra was born, and where she came home.
 
-[Learn more at prxpr.org](https://prxpr.org)
+[Learn more about PRxPR](https://prxpr.org)
 
 {{support:prxpr}}
 
@@ -29,7 +29,7 @@ end hidden -->
 
 Bridges the financial gap for undocumented immigrant students who can’t receive federal aid, so that they can go to college — the kind of dream Sandra spent years helping her students reach.
 
-[Learn more at thedream.us](https://www.thedream.us)
+[Learn more about thedream.us](https://secure.donationpay.org/thedream/)
 
 {{support:thedream}}
 
@@ -37,7 +37,7 @@ Bridges the financial gap for undocumented immigrant students who can’t receiv
 
 Supports Hispanic teachers, helps schools keep bilingual educators, and works for public school policies that serve immigrant families well. Sandra was a bilingual teacher and a school counselor herself.
 
-[Learn more at latinosforeducation.org](https://latinosforeducation.org)
+[Learn more about Latinos for Education](https://www.latinosforeducation.org/donate/)
 
 {{support:latinos-for-education}}
 

@@ -8,7 +8,7 @@ En lugar de flores, la familia de Sandra le invita a ayudar a continuar su legad
 
 Subvenciones directas y rápidas para microrredes solares y sistemas de agua en Puerto Rico, especialmente en comunidades rurales — por la isla donde Sandra nació y a la que regresó.
 
-[Más información en prxpr.org](https://prxpr.org)
+[Más información sobre PRxPR](https://prxpr.org)
 
 {{support:prxpr}}
 
@@ -29,7 +29,7 @@ fin de oculto -->
 
 Cubre la necesidad económica de estudiantes inmigrantes indocumentados que no pueden recibir ayuda federal, para que puedan ir a la universidad — el tipo de sueño que Sandra pasó años ayudando a sus estudiantes a alcanzar.
 
-[Más información en thedream.us](https://www.thedream.us)
+[Más información sobre thedream.us](https://secure.donationpay.org/thedream/)
 
 {{support:thedream}}
 
@@ -37,7 +37,7 @@ Cubre la necesidad económica de estudiantes inmigrantes indocumentados que no p
 
 Apoya a maestros hispanos, ayuda a las escuelas a retener a educadores bilingües y trabaja por políticas escolares que sirvan bien a las familias inmigrantes. Sandra misma fue maestra bilingüe y consejera escolar.
 
-[Más información en latinosforeducation.org](https://latinosforeducation.org)
+[Más información sobre Latinos for Education](https://www.latinosforeducation.org/donate/)
 
 {{support:latinos-for-education}}
 
