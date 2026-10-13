@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getPublishedEntries, formatDate, PAGE_SIZE } from "@/lib/guestbook";
 import { DATE_LOCALE, dict, localize, type Locale } from "@/lib/i18n";
+import { redactSurname } from "@/lib/redact";
 
 /** /guestbook in either language. Messages are shown as written, in whatever language. */
 export default async function Guestbook({
@@ -68,7 +69,7 @@ export default async function Guestbook({
                   without interpreting anything as markup. No lang attribute:
                   a message is in whichever language its writer chose. */}
               <p className="entry-message" lang="">
-                {entry.message}
+                {redactSurname(entry.message)}
               </p>
             </article>
           ))}

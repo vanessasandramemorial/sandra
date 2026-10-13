@@ -90,7 +90,10 @@ Public, in nav order (`src/lib/sections.ts`): `/photos` (with
 `{{support:slug}}` line in the Markdown. The button has no Turnstile on purpose:
 it writes one number, not anyone's words, so it is guarded by a per-IP-hash rate
 limit instead, and the family can set any count in `/admin`. A visitor can undo
-their own press with the id their browser kept. There is no public mailing-list
+their own press with the id their browser kept. Guestbook messages and photo captions pass through `redactSurname`
+(`src/lib/redact.ts`) when shown, which rewrites one surname named only in the
+`REDACT_SURNAME` environment variable — never in the repo — so originals stay
+intact in the database and `/admin`. There is no public mailing-list
 signup; the contacts already collected stay readable and exportable in `/admin`.
 
 ### Two languages

@@ -3,6 +3,7 @@ import Gallery from "./gallery";
 import { getApprovedPhotos, type PhotoKind as Kind } from "@/lib/photos";
 import { imageUrl, thumbUrl, imagesConfigured } from "@/lib/cf-images";
 import { dict, localize, type Locale } from "@/lib/i18n";
+import { redactSurname } from "@/lib/redact";
 
 /**
  * /photos and /artifacts in either language. Both galleries are the same
@@ -73,7 +74,7 @@ export default async function GalleryPage({ kind, lang }: { kind: Kind; lang: Lo
             id: p.id,
             thumb: thumbUrl(p.storage_ref),
             full: imageUrl(p.storage_ref),
-            caption: p.caption,
+            caption: redactSurname(p.caption),
             submitter: p.submitter,
             year: p.taken_year,
             yearApprox: p.taken_source === "guess",
@@ -83,7 +84,7 @@ export default async function GalleryPage({ kind, lang }: { kind: Kind; lang: Lo
             stack: p.stack.map((s) => ({
               thumb: thumbUrl(s.storage_ref),
               full: imageUrl(s.storage_ref),
-              caption: s.caption,
+              caption: redactSurname(s.caption),
               rotation: s.rotation,
               width: s.width,
               height: s.height,
